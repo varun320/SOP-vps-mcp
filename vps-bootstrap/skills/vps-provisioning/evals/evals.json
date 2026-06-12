@@ -1,0 +1,33 @@
+{
+  "skill_name": "vps-provisioning",
+  "evals": [
+    {
+      "id": 1,
+      "name": "fresh-hostinger-ubuntu",
+      "prompt": "I just got a fresh Ubuntu 24.04 VPS from Hostinger, 2 vCPU 4GB RAM. Root SSH works with the password they emailed. I'm going to run a long-lived service on it later this week. What's the absolute first thing I should do on the box, and then what comes after that? Give me a runnable sequence.",
+      "files": [],
+      "assertions": [
+        {"text": "Runs apt update + apt upgrade as first or near-first step", "check": "contains", "needle": "apt update"},
+        {"text": "Creates a non-root service user with useradd -m", "check": "regex", "pattern": "useradd\\s+-m"},
+        {"text": "Configures UFW with default deny incoming", "check": "contains", "needle": "default deny incoming"},
+        {"text": "Enables fail2ban", "check": "contains", "needle": "fail2ban"},
+        {"text": "Disables SSH password auth via PasswordAuthentication no", "check": "contains", "needle": "PasswordAuthentication no"},
+        {"text": "Warns to verify alternate SSH access before closing port 22", "check": "manual"},
+        {"text": "Sets timezone to UTC", "check": "contains", "needle": "UTC"}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "harden-running-server",
+      "prompt": "My DigitalOcean droplet has been running with root SSH and password auth for two months. I haven't been hacked yet but I'm sweating. Walk me through tightening it without locking myself out. I have my SSH public key at ~/.ssh/id_ed25519.pub on my laptop.",
+      "files": [],
+      "assertions": [
+        {"text": "Tells user to copy public key with ssh-copy-id BEFORE disabling password auth", "check": "manual"},
+        {"text": "Suggests creating a non-root user before locking down root login", "check": "regex", "pattern": "(useradd|adduser|non-root)"},
+        {"text": "Recommends fail2ban", "check": "contains", "needle": "fail2ban"},
+        {"text": "Mentions verifying tailnet/key SSH works before closing public port 22", "check": "manual"},
+        {"text": "Recommends unattended-upgrades or equivalent auto-patching", "check": "contains", "needle": "unattended-upgrades"}
+      ]
+    }
+  ]
+}
